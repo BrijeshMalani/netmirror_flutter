@@ -7,6 +7,7 @@ import 'package:netmirror_flutter/share_service.dart';
 import 'Utils/common.dart';
 import 'feedback_service.dart';
 import 'game/game_screen.dart';
+import 'netmirror/movielist_screen.dart';
 
 class PlayerSelectionScreen extends StatefulWidget {
   const PlayerSelectionScreen({super.key});
@@ -212,12 +213,12 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
   }
 
   Widget _buildPopupMenuItem(
-      BuildContext context, {
-        required IconData icon,
-        required String title,
-        required String subtitle,
-        required VoidCallback onTap,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
@@ -313,18 +314,18 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
                         children: [
                           Common.Qurekaid.isNotEmpty
                               ? const InkWell(
-                            onTap: Common.openUrl,
-                            child: Image(
-                              image: AssetImage(
-                                "assets/images/qurekaads3.png",
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          )
+                                  onTap: Common.openUrl,
+                                  child: Image(
+                                    image: AssetImage(
+                                      "assets/images/qurekaads3.png",
+                                    ),
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
                               : Image(
-                            image: AssetImage("assets/images/j1.png"),
-                            fit: BoxFit.cover,
-                          ),
+                                  image: AssetImage("assets/images/j1.png"),
+                                  fit: BoxFit.cover,
+                                ),
                           const SizedBox(height: 10),
                           // Subtitle
                           const Text(
@@ -345,73 +346,79 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
                           const SizedBox(height: 10),
                           Common.qureka_game_show.isNotEmpty
                               ? Column(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  if (Common.adsopen == "1" ||
-                                      Common.adsopen == "2") {
-                                    Common.openUrl();
-                                  }
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                      const GameScreen(),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 60,
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFF1E3A8A),
-                                        Color(0xFF3B82F6),
-                                      ],
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(
-                                      15,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(
-                                          0.2,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        if (Common.adsopen == "1" ||
+                                            Common.adsopen == "2") {
+                                          Common.openUrl();
+                                        }
+                                        // Navigator.of(context).push(
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) =>
+                                        //     const GameScreen(),
+                                        //   ),
+                                        // );
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const MovielistScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: 60,
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 20,
                                         ),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.games,
-                                        color: Colors.white,
-                                        size: 24,
-                                      ),
-                                      SizedBox(width: 12),
-                                      Text(
-                                        'Browse Game Categories',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color(0xFF1E3A8A),
+                                              Color(0xFF3B82F6),
+                                            ],
+                                            begin: Alignment.centerLeft,
+                                            end: Alignment.centerRight,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(
+                                                0.2,
+                                              ),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.games,
+                                              color: Colors.white,
+                                              size: 24,
+                                            ),
+                                            SizedBox(width: 12),
+                                            Text(
+                                              'Browse Game Categories',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                            ],
-                          )
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                                )
                               : SizedBox(),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -472,15 +479,15 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
                   ),
                   Common.Qurekaid.isNotEmpty
                       ? InkWell(
-                    onTap: Common.openUrl,
-                    child: Image(
-                      width: MediaQuery.of(context).size.width,
-                      image: const AssetImage(
-                        "assets/images/bannerads.png",
-                      ),
-                      fit: BoxFit.fill,
-                    ),
-                  )
+                          onTap: Common.openUrl,
+                          child: Image(
+                            width: MediaQuery.of(context).size.width,
+                            image: const AssetImage(
+                              "assets/images/bannerads.png",
+                            ),
+                            fit: BoxFit.fill,
+                          ),
+                        )
                       : SizedBox(),
                 ],
               ),
@@ -499,13 +506,13 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
           selectedPlayers = players;
           if (players == 2)
             selectedDescription =
-            "Enjoy a classic head-to-head challenge in Ludo with the 2-player mode. This mode is perfect when you want a quick and exciting match with just one friend. Test your strategy, make smart moves, and race your tokens to the finish line before your opponent. Every dice roll counts—one mistake can cost you the game! Whether online or offline, 2-player mode gives you the thrill of intense one-on-one competition.";
+                "Enjoy a classic head-to-head challenge in Ludo with the 2-player mode. This mode is perfect when you want a quick and exciting match with just one friend. Test your strategy, make smart moves, and race your tokens to the finish line before your opponent. Every dice roll counts—one mistake can cost you the game! Whether online or offline, 2-player mode gives you the thrill of intense one-on-one competition.";
           if (players == 3)
             selectedDescription =
-            "Want something more exciting than a 1v1 but not as crowded as 4 players? The 3-player mode is just right for you. In this mode, three players battle it out on the Ludo board with equal chances of winning. Play smart, block your opponents, and don’t let them reach the home first. This mode brings a perfect balance of fun, strategy, and challenge—ideal for when you have two friends ready to roll the dice!";
+                "Want something more exciting than a 1v1 but not as crowded as 4 players? The 3-player mode is just right for you. In this mode, three players battle it out on the Ludo board with equal chances of winning. Play smart, block your opponents, and don’t let them reach the home first. This mode brings a perfect balance of fun, strategy, and challenge—ideal for when you have two friends ready to roll the dice!";
           if (players == 4)
             selectedDescription =
-            "Experience the ultimate Ludo fun with the 4-player mode! This is the most popular and classic way to enjoy Ludo with friends and family. Up to four players can join the board, making the game full of excitement, twists, and surprises. Team up or play solo, block your opponents, and race your tokens to victory. The 4-player mode guarantees laughter, fun, and endless entertainment—perfect for parties, gatherings, or family game nights.";
+                "Experience the ultimate Ludo fun with the 4-player mode! This is the most popular and classic way to enjoy Ludo with friends and family. Up to four players can join the board, making the game full of excitement, twists, and surprises. Team up or play solo, block your opponents, and race your tokens to victory. The 4-player mode guarantees laughter, fun, and endless entertainment—perfect for parties, gatherings, or family game nights.";
         });
       },
       child: AnimatedContainer(
@@ -521,12 +528,12 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
           ),
           boxShadow: isSelected
               ? [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ]
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ]
               : null,
         ),
         child: Column(

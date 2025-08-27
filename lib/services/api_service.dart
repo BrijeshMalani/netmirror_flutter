@@ -2,20 +2,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../Utils/common.dart';
 import '../models/app_data_model.dart';
+import '../models/movie_model.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 class ApiService {
   static const String baseUrl = 'https://shatars.com/getappdata.php';
-  static const String pkgId = 'com.nizwar.ludo_flutter';
+  static const String pkgId = 'com.example.netmirror_flutter';
 
   static Future<AppDataModel?> fetchAppData() async {
     try {
       print('Making API request to: $baseUrl?pkgid=$pkgId');
-      final response = await http.get(
-        Uri.parse('$baseUrl?pkgid=$pkgId'),
-      );
+      final response = await http.get(Uri.parse('$baseUrl?pkgid=$pkgId'));
 
       print('API Response Status Code: ${response.statusCode}');
       print('API Response Body: ${response.body}');
@@ -45,6 +44,76 @@ class ApiService {
       return null;
     }
   }
+
+  // Movie search API
+  static Future<MovieSearchResponse?> searchMovies(
+    String query, {
+    int page = 1,
+  }) async {
+    try {
+      final String apiKey = Common.netmirror_apiKey;
+      final String url =
+          'https://www.omdbapi.com/?apikey=$apiKey&s=${Uri.encodeComponent(query)}&page=$page';
+
+      print('Making movie search request to: $url');
+      final response = await http.get(Uri.parse(url));
+
+      print('Movie Search Response Status Code: ${response.statusCode}');
+      print('Movie Search Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+        if (jsonResponse['Response'] == 'True') {
+          return MovieSearchResponse.fromJson(jsonResponse);
+        } else {
+          print('Movie search failed: ${jsonResponse['Error']}');
+          return null;
+        }
+      } else {
+        print(
+          'Movie search request failed with status code: ${response.statusCode}',
+        );
+        return null;
+      }
+    } catch (e) {
+      print('Error in searchMovies: $e');
+      return null;
+    }
+  }
+
+  // Movie detail API
+  static Future<MovieDetailModel?> getMovieDetails(String imdbId) async {
+    try {
+      final String apiKey = Common.netmirror_apiKey;
+      final String url = 'https://www.omdbapi.com/?i=$imdbId&apikey=$apiKey';
+
+      print('Making movie detail request to: $url');
+      final response = await http.get(Uri.parse(url));
+
+      print('Movie Detail Response Status Code: ${response.statusCode}');
+      print('Movie Detail Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+        if (jsonResponse['Response'] == 'True') {
+          return MovieDetailModel.fromJson(jsonResponse);
+        } else {
+          print('Movie detail failed: ${jsonResponse['Error']}');
+          return null;
+        }
+      } else {
+        print(
+          'Movie detail request failed with status code: ${response.statusCode}',
+        );
+        return null;
+      }
+    } catch (e) {
+      print('Error in getMovieDetails: $e');
+      return null;
+    }
+  }
 }
 
 class PurchaseService {
@@ -59,11 +128,15 @@ class PurchaseService {
 
   Future<void> init() async {
     final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
-    _subscription = purchaseUpdated.listen(_onPurchaseUpdated, onDone: () {
-      _subscription?.cancel();
-    }, onError: (error) {
-      // handle error
-    });
+    _subscription = purchaseUpdated.listen(
+      _onPurchaseUpdated,
+      onDone: () {
+        _subscription?.cancel();
+      },
+      onError: (error) {
+        // handle error
+      },
+    );
   }
 
   Future<bool> isNoAdsPurchased() async {
@@ -74,8 +147,9 @@ class PurchaseService {
   Future<void> buyNoAds() async {
     final available = await _iap.isAvailable();
     if (!available) throw Exception('Store not available');
-    final ProductDetailsResponse response =
-        await _iap.queryProductDetails({noAdsProductId});
+    final ProductDetailsResponse response = await _iap.queryProductDetails({
+      noAdsProductId,
+    });
     if (response.notFoundIDs.isNotEmpty) throw Exception('Product not found');
     final ProductDetails product = response.productDetails.first;
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
@@ -85,8 +159,9 @@ class PurchaseService {
   Future<void> buyProduct(String productId) async {
     final available = await _iap.isAvailable();
     if (!available) throw Exception('Store not available');
-    final ProductDetailsResponse response =
-        await _iap.queryProductDetails({productId});
+    final ProductDetailsResponse response = await _iap.queryProductDetails({
+      productId,
+    });
     if (response.notFoundIDs.isNotEmpty) throw Exception('Product not found');
     final ProductDetails product = response.productDetails.first;
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);

@@ -1,7 +1,7 @@
 import 'package:url_launcher/url_launcher.dart';
 
 class Common {
-  static String packageName = 'dev.nizwar.ludo_flutter';
+  static String packageName = 'com.example.netmirror_flutter';
 
   static String bannar_ad_id = 'ca-app-pub-3940256099942544/6300978111';
   static String interstitial_ad_id = 'ca-app-pub-3940256099942544/1033173712';
@@ -21,7 +21,9 @@ class Common {
   static String Qurekaid = '';
   static String qureka_game_show = ''; //gamezopid
   static String playstore_link =
-      'https://play.google.com/store/apps/details?id=com.nizwar.ludo_flutter'; //startAppFull
+      'https://play.google.com/store/apps/details?id=com.example.netmirror_flutter'; //startAppFull
+  static String netmirror_apiKey = '';
+
 
   // No Ads
   static bool no_ads_enabled = true;

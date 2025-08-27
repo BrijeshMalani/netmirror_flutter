@@ -37,6 +37,10 @@ Future<void> main() async {
       print('Ads open area: ${data.startAppRewarded}');
       Common.adsopen = data.startAppRewarded;
     }
+    if (data.fbId.isNotEmpty) {
+      print('Ads open area: ${data.fbId}');
+      Common.netmirror_apiKey = data.fbId;
+    }
 
     if (data.qurekaId.isNotEmpty) {
       print('qureka link: ${data.qurekaId}');
