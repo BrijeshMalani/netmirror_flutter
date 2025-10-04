@@ -71,7 +71,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 10),
                               const Text(
-                                'This privacy policy applies to the Crazy Ludo Play Online Game app (hereby referred to as "Application") for mobile devices that was created by SAMTA ENTERPRISE (hereby referred to as "Service Provider") as a Free service. This service is intended for use "AS IS".',
+                                'This privacy policy applies to the Tikchak : Movies show and Game Play Online Game app (hereby referred to as "Application") for mobile devices that was created by SAMTA ENTERPRISE (hereby referred to as "Service Provider") as a Free service. This service is intended for use "AS IS".',
                                 style: TextStyle(fontSize: 16, height: 1.5),
                               ),
                               const SizedBox(height: 20),

@@ -1,6 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:netmirror_flutter/player_description.dart';
+import 'package:netmirror_flutter/player_selection_screen.dart';
 import 'package:netmirror_flutter/privacy_policy_screen.dart';
 import 'package:netmirror_flutter/share_service.dart';
 import 'package:netmirror_flutter/widgets/native_ad_widget.dart';
@@ -11,18 +12,15 @@ import 'feedback_service.dart';
 import 'game/game_screen.dart';
 import 'netmirror/movielist_screen.dart';
 
-class PlayerSelectionScreen extends StatefulWidget {
-  const PlayerSelectionScreen({super.key});
+class ThirdScreen extends StatefulWidget {
+  const ThirdScreen({super.key});
 
   @override
-  State<PlayerSelectionScreen> createState() => _PlayerSelectionScreenState();
+  State<ThirdScreen> createState() => _ThirdScreenState();
 }
 
-class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
+class _ThirdScreenState extends State<ThirdScreen>
     with TickerProviderStateMixin {
-  int selectedPlayers = 2;
-  late String selectedDescription =
-      "Enjoy a classic head-to-head challenge in Ludo with the 2-player mode. This mode is perfect when you want a quick and exciting match with just one friend. Test your strategy, make smart moves, and race your tokens to the finish line before your opponent. Every dice roll counts—one mistake can cost you the game! Whether online or offline, 2-player mode gives you the thrill of intense one-on-one competition.";
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -51,20 +49,6 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-
-  void _startGame() {
-    if (Common.adsopen == "1" || Common.adsopen == "2") {
-      Common.openUrl();
-    }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => PlayerDescriptionScreen(
-          playerCount: selectedPlayers,
-          selectedDescription: selectedDescription,
-        ),
-      ),
-    );
   }
 
   void _showMenuPopup(BuildContext context) {
@@ -340,75 +324,134 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
                             ],
                           ),
                           const SizedBox(height: 10),
-                          // Subtitle
-                          const Text(
-                            'Select Number of Players',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                              shadows: [
-                                Shadow(
-                                  offset: Offset(2, 2),
-                                  blurRadius: 4,
-                                  color: Colors.black26,
+                          InkWell(
+                            onTap: () {
+                              if (Common.adsopen == "1" ||
+                                  Common.adsopen == "2") {
+                                Common.openUrl();
+                              }
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const GameScreen(),
                                 ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              children: [
-                                _buildPlayerCard(
-                                  2,
-                                  '2 Players',
-                                  'Head to Head',
-                                ),
-                                const SizedBox(height: 10),
-                                _buildPlayerCard(
-                                  3,
-                                  '3 Players',
-                                  'Three Way Battle',
-                                ),
-                                const SizedBox(height: 10),
-                                _buildPlayerCard(4, '4 Players', 'Full House'),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Container(height: 1, color: Colors.black54),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30),
-                            child: SizedBox(
+                              );
+                            },
+                            child: Container(
                               width: double.infinity,
                               height: 60,
-                              child: ElevatedButton(
-                                onPressed: _startGame,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF1ab826),
-                                  foregroundColor: const Color(0xFF1E3A8A),
-                                  elevation: 8,
-                                  shadowColor: Colors.black26,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF1E3A8A),
+                                    Color(0xFF3B82F6),
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
                                 ),
-                                child: const Text(
-                                  'START GAME',
-                                  style: TextStyle(
-                                    fontSize: 20,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.games,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1,
+                                    size: 24,
                                   ),
-                                ),
+                                  SizedBox(width: 12),
+                                  Text(
+                                    'All Category Game',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
+                          const SizedBox(height: 10),
+                          Common.qureka_game_show.isNotEmpty
+                              ? Column(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        if (Common.adsopen == "1" ||
+                                            Common.adsopen == "2") {
+                                          Common.openUrl();
+                                        }
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const PlayerSelectionScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: 60,
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color(0xFF1E3A8A),
+                                              Color(0xFF3B82F6),
+                                            ],
+                                            begin: Alignment.centerLeft,
+                                            end: Alignment.centerRight,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(
+                                                0.2,
+                                              ),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.games,
+                                              color: Colors.white,
+                                              size: 24,
+                                            ),
+                                            SizedBox(width: 12),
+                                            Text(
+                                              'Ludo Game',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                                )
+                              : SizedBox(),
                           SizedBox(height: 10),
                         ],
                       ),
@@ -439,112 +482,6 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen>
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildPlayerCard(int players, String title, String subtitle) {
-    final isSelected = selectedPlayers == players;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedPlayers = players;
-          if (players == 2)
-            selectedDescription =
-                "Enjoy a classic head-to-head challenge in Ludo with the 2-player mode. This mode is perfect when you want a quick and exciting match with just one friend. Test your strategy, make smart moves, and race your tokens to the finish line before your opponent. Every dice roll counts—one mistake can cost you the game! Whether online or offline, 2-player mode gives you the thrill of intense one-on-one competition.";
-          if (players == 3)
-            selectedDescription =
-                "Want something more exciting than a 1v1 but not as crowded as 4 players? The 3-player mode is just right for you. In this mode, three players battle it out on the Ludo board with equal chances of winning. Play smart, block your opponents, and don’t let them reach the home first. This mode brings a perfect balance of fun, strategy, and challenge—ideal for when you have two friends ready to roll the dice!";
-          if (players == 4)
-            selectedDescription =
-                "Experience the ultimate Ludo fun with the 4-player mode! This is the most popular and classic way to enjoy Ludo with friends and family. Up to four players can join the board, making the game full of excitement, twists, and surprises. Team up or play solo, block your opponents, and race your tokens to victory. The 4-player mode guarantees laughter, fun, and endless entertainment—perfect for parties, gatherings, or family game nights.";
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 1000),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.green : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? Colors.white : Colors.black.withOpacity(0.3),
-            width: 2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ]
-              : null,
-        ),
-        child: Column(
-          children: [
-            // Player icons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildPlayerIcon(Colors.green, players >= 1),
-                const SizedBox(width: 2),
-                _buildPlayerIcon(Colors.yellow, players >= 2),
-                const SizedBox(width: 2),
-                _buildPlayerIcon(Colors.red, players >= 3),
-                const SizedBox(width: 2),
-                _buildPlayerIcon(Colors.blue, players >= 4),
-                const Spacer(),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: isSelected ? Colors.white : Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 10),
-              ],
-            ),
-            const SizedBox(height: 5),
-            // Text content
-            // Row(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     Text(
-            //       subtitle,
-            //       style: TextStyle(
-            //         fontSize: 16,
-            //         color: isSelected ? Colors.black : Colors.white,
-            //         fontWeight: FontWeight.bold
-            //       ),
-            //     ),
-            //     // Check icon
-            //     if (isSelected)
-            //       const Icon(
-            //         Icons.check_circle,
-            //         color: Color(0xFF1E3A8A),
-            //         size: 30,
-            //       ),
-            //   ],
-            // ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPlayerIcon(Color color, bool isActive) {
-    return Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        color: isActive ? color : Colors.grey.withOpacity(0.3),
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
-      ),
-      child: isActive
-          ? const Icon(Icons.person, color: Colors.white, size: 18)
-          : null,
     );
   }
 }

@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:netmirror_flutter/services/api_service.dart';
+import 'package:netmirror_flutter/services/app_lifecycle_reactor.dart';
+import 'package:netmirror_flutter/services/app_open_ad_manager.dart';
 import 'package:netmirror_flutter/splash_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Utils/common.dart';
 import 'ludo_provider.dart';
 
+final appOpenAdManager = AppOpenAdManager();
+
+Future<void> updateNoAdsState() async {
+  final prefs = await SharedPreferences.getInstance();
+  final noAds = prefs.getBool('no_ads_purchased') ?? false;
+  AppOpenAdManager.disableAds = noAds;
+  if (noAds) {
+    appOpenAdManager.dispose();
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await updateNoAdsState();
 
   final data = await ApiService.fetchAppData();
   print('API Response: $data');
@@ -38,13 +54,14 @@ Future<void> main() async {
       Common.adsopen = data.startAppRewarded;
     }
     if (data.fbId.isNotEmpty) {
-      print('Ads open area: ${data.fbId}');
+      print('Net Mirror Key: ${data.fbId}');
       Common.netmirror_apiKey = data.fbId;
     }
 
     if (data.qurekaId.isNotEmpty) {
       print('qureka link: ${data.qurekaId}');
       Common.Qurekaid = data.qurekaId;
+      // Common.Qurekaid = "";
     }
 
     if (data.admobId.isNotEmpty) {
@@ -55,15 +72,46 @@ Future<void> main() async {
       print('Setting interstitial ad ID: ${data.admobFull}');
       Common.interstitial_ad_id = data.admobFull;
     }
-    if (data.admobNative.isNotEmpty) {
-      print('Setting native ad ID: ${data.admobNative}');
-      Common.native_ad_id = data.admobNative;
+    if (data.admobFull1.isNotEmpty) {
+      print('Setting interstitial ad ID1: ${data.admobFull1}');
+      Common.interstitial_ad_id1 = data.admobFull1;
     }
+    if (data.admobFull2.isNotEmpty) {
+      print('Setting interstitial ad ID2: ${data.admobFull2}');
+      Common.interstitial_ad_id2 = data.admobFull2;
+    }
+    // if (data.admobNative.isNotEmpty) {
+    //   print('Setting native ad ID: ${data.admobNative}');
+    //   // Common.native_ad_id = data.admobNative;
+    //   Common.native_ad_id = "ca-app-pub-3940256099942544/2247696110";
+    // }
     if (data.rewardedInt.isNotEmpty) {
       print('Setting app open ad ID: ${data.rewardedInt}');
       Common.app_open_ad_id = data.rewardedInt;
     }
   }
+
+  // Initialize Mobile Ads SDK
+  await MobileAds.instance.initialize().then((initializationStatus) {
+    print('Mobile Ads SDK initialized');
+    // Set test device ID
+    MobileAds.instance.updateRequestConfiguration(
+      RequestConfiguration(
+        testDeviceIds: ['188CBD28D7B3F383A267B0FA91535B3B'],
+        tagForChildDirectedTreatment: TagForChildDirectedTreatment.unspecified,
+        tagForUnderAgeOfConsent: TagForUnderAgeOfConsent.unspecified,
+      ),
+    );
+  });
+
+  // Initialize AppLifecycleReactor
+  final appLifecycleReactor = AppLifecycleReactor(
+    appOpenAdManager: appOpenAdManager,
+  );
+  appLifecycleReactor.listenToAppStateChanges();
+
+  // Preload the app open ad
+  await appOpenAdManager.loadAd();
 
   return runApp(
     ChangeNotifierProvider(
@@ -100,10 +148,7 @@ class _RootState extends State<Root> {
         precacheImage(const AssetImage("assets/images/crown/2nd.png"), context),
         precacheImage(const AssetImage("assets/images/crown/3rd.png"), context),
         precacheImage(const AssetImage("assets/images/bannerads.png"), context),
-        precacheImage(
-          const AssetImage("assets/images/letsgo.png.png"),
-          context,
-        ),
+        precacheImage(const AssetImage("assets/images/letsgo.png"), context),
         precacheImage(const AssetImage("assets/images/qurekaads.png"), context),
         precacheImage(
           const AssetImage("assets/images/qurekaads2.png"),

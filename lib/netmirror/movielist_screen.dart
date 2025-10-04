@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../Utils/common.dart';
 import '../services/api_service.dart';
 import '../models/movie_model.dart';
+import '../widgets/native_banner_ad_widget.dart';
 import 'movie_detail_screen.dart';
 
 class MovielistScreen extends StatefulWidget {
@@ -285,6 +287,25 @@ class _MovielistScreenState extends State<MovielistScreen> {
                         },
                       ),
                     ),
+            ),
+            Stack(
+              children: [
+                Common.Qurekaid.isNotEmpty
+                    ? InkWell(
+                        onTap: Common.openUrl,
+                        child: Image(
+                          width: MediaQuery.of(context).size.width,
+                          image: const AssetImage(
+                            "assets/images/bannerads.png",
+                          ),
+                          fit: BoxFit.fill,
+                        ),
+                      )
+                    : SizedBox(),
+                Common.native_ad_id.isNotEmpty
+                    ? NativeBannerAdWidget()
+                    : SizedBox(),
+              ],
             ),
           ],
         ),

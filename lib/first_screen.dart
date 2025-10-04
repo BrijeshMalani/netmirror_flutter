@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:netmirror_flutter/player_selection_screen.dart';
 import 'package:netmirror_flutter/privacy_policy_screen.dart';
+import 'package:netmirror_flutter/secound_screen.dart';
 import 'package:netmirror_flutter/share_service.dart';
+import 'package:netmirror_flutter/widgets/native_ad_widget.dart';
+import 'package:netmirror_flutter/widgets/native_banner_ad_widget.dart';
 
 import 'Utils/common.dart';
 import 'feedback_service.dart';
+import 'services/app_open_ad_manager.dart';
 
 class FirstScreen extends StatefulWidget {
   const FirstScreen({super.key});
@@ -15,6 +20,73 @@ class FirstScreen extends StatefulWidget {
 }
 
 class _FirstScreenState extends State<FirstScreen> {
+  BannerAd? _bannerAd;
+  InterstitialAd? _interstitialAd;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBannerAd();
+    _loadInterstitialAd(Common.interstitial_ad_id);
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: Common.bannar_ad_id,
+      // Android test banner ad unit ID
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) => setState(() {}),
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  void _loadInterstitialAd(String ads_id) {
+    InterstitialAd.load(
+      adUnitId: ads_id,
+      // Android test interstitial ad unit ID
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) => _interstitialAd = ad,
+        onAdFailedToLoad: (error) => _interstitialAd = null,
+      ),
+    );
+  }
+
+  void _showInterstitialAd(VoidCallback onAdClosed, String ads_id) {
+    if (_interstitialAd != null) {
+      // Prevent app open ad on the next resume caused by interstitial
+      AppOpenAdManager.suppressNextOnResume();
+      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (ad) {
+          ad.dispose();
+          _loadInterstitialAd(ads_id);
+          onAdClosed();
+        },
+        onAdFailedToShowFullScreenContent: (ad, error) {
+          ad.dispose();
+          _loadInterstitialAd(ads_id);
+          onAdClosed();
+        },
+      );
+      _interstitialAd!.show();
+      _interstitialAd = null;
+    } else {
+      onAdClosed();
+    }
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    _interstitialAd?.dispose();
+    super.dispose();
+  }
+
   Future<bool> _showExitDialog(BuildContext context) async {
     return await showDialog<bool>(
           context: context,
@@ -407,7 +479,7 @@ class _FirstScreenState extends State<FirstScreen> {
                     children: [
                       const Spacer(),
                       const Text(
-                        'Crazy Ludo',
+                        'Movies show and Game',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
@@ -433,10 +505,10 @@ class _FirstScreenState extends State<FirstScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Common.Qurekaid.isNotEmpty
-                            ? Column(
-                                children: [
-                                  const InkWell(
+                        Stack(
+                          children: [
+                            Common.Qurekaid.isNotEmpty
+                                ? InkWell(
                                     onTap: Common.openUrl,
                                     child: Image(
                                       image: AssetImage(
@@ -444,28 +516,29 @@ class _FirstScreenState extends State<FirstScreen> {
                                       ),
                                       fit: BoxFit.cover,
                                     ),
+                                  )
+                                : Image(
+                                    image: AssetImage("assets/images/j1.png"),
+                                    fit: BoxFit.cover,
                                   ),
-                                  const SizedBox(height: 10),
-                                  InkWell(
-                                    onTap: () {
-                                      FeedbackService.openPlayStoreFeedback();
-                                    },
-                                    child: const Image(
-                                      height: 70,
-                                      image: AssetImage(
-                                        "assets/images/letsgo.png",
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
+
+                            Common.native_ad_id.isNotEmpty
+                                ? NativeAdWidget()
+                                : Image(
+                                    image: AssetImage("assets/images/j1.png"),
+                                    fit: BoxFit.cover,
                                   ),
-                                ],
-                              )
-                            : Image(
-                                image: AssetImage(
-                                  "assets/images/j1.png",
-                                ),
-                                fit: BoxFit.cover,
-                              ),
+                          ],
+                        ),
+                        if (Common.Qurekaid.isNotEmpty)
+                          InkWell(
+                            onTap: Common.openUrl,
+                            child: const Image(
+                              height: 70,
+                              image: AssetImage("assets/images/letsgo.png"),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -476,13 +549,21 @@ class _FirstScreenState extends State<FirstScreen> {
                                     Common.adsopen == "2") {
                                   Common.openUrl();
                                 }
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const
-                                        PlayerSelectionScreen(),
-                                  ),
-                                );
+                                Common.interstitial_ad_id.isEmpty
+                                    ? Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const SecoundScreen(),
+                                        ),
+                                      )
+                                    : _showInterstitialAd(() {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const SecoundScreen(),
+                                          ),
+                                        );
+                                      }, Common.interstitial_ad_id);
                               },
                               child: Image(
                                 height:
@@ -568,17 +649,8 @@ class _FirstScreenState extends State<FirstScreen> {
                     ),
                   ),
                 ),
-                Common.Qurekaid.isNotEmpty
-                    ? InkWell(
-                        onTap: Common.openUrl,
-                        child: Image(
-                          width: MediaQuery.of(context).size.width,
-                          image: const AssetImage(
-                            "assets/images/bannerads.png",
-                          ),
-                          fit: BoxFit.fill,
-                        ),
-                      )
+                Common.native_ad_id.isNotEmpty
+                    ? NativeBannerAdWidget()
                     : SizedBox(),
               ],
             ),
