@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../Utils/common.dart';
 import '../services/api_service.dart';
 import '../models/movie_model.dart';
-import '../widgets/native_banner_ad_widget.dart';
+import '../widgets/WorkingNativeAdWidget.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final String imdbId;
@@ -73,11 +72,16 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               '$label:',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                color: Colors.white70,
               ),
             ),
           ),
-          Expanded(child: Text(value, style: const TextStyle(fontSize: 14))),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 14, color: Colors.white),
+            ),
+          ),
         ],
       ),
     );
@@ -88,9 +92,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       margin: const EdgeInsets.only(right: 12, bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.1),
+        color: Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -99,13 +103,17 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: Colors.blue,
+              color: Colors.red,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
@@ -117,7 +125,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.movieTitle, style: const TextStyle(fontSize: 18)),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -125,7 +133,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         children: [
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? Container(
+                    color: Colors.black,
+                    child: const Center(
+                      child: CircularProgressIndicator(color: Colors.red),
+                    ),
+                  )
                 : _errorMessage.isNotEmpty
                 ? Center(
                     child: Column(
@@ -155,330 +168,391 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                   )
                 : _movieDetail == null
                 ? const Center(child: Text('No movie details available'))
-                : SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Movie Poster and Basic Info
-                        Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.blue, Colors.white],
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Poster
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: _movieDetail!.poster != 'N/A'
-                                      ? Image.network(
-                                          _movieDetail!.poster,
-                                          width: 120,
-                                          height: 180,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                                return Container(
-                                                  width: 120,
-                                                  height: 180,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey[300],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.movie,
-                                                    size: 48,
-                                                    color: Colors.grey,
-                                                  ),
-                                                );
-                                              },
-                                        )
-                                      : Container(
-                                          width: 120,
-                                          height: 180,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[300],
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          child: const Icon(
-                                            Icons.movie,
-                                            size: 48,
-                                            color: Colors.grey,
+                : Stack(
+                    children: [
+                      Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(0),
+                            child: _movieDetail!.poster != 'N/A'
+                                ? Image.network(
+                                    _movieDetail!.poster,
+                                    width: double.infinity,
+                                    height: 280,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        width: 120,
+                                        height: 180,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[300],
+                                          borderRadius: BorderRadius.circular(
+                                            12,
                                           ),
                                         ),
-                                ),
-                                const SizedBox(width: 16),
-                                // Basic Info
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        _movieDetail!.title,
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+                                        child: const Icon(
+                                          Icons.movie,
+                                          size: 48,
+                                          color: Colors.grey,
                                         ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      if (_movieDetail!.year != 'N/A')
-                                        Text(
-                                          _movieDetail!.year,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                      const SizedBox(height: 8),
-                                      if (_movieDetail!.rated != 'N/A')
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black.withValues(
-                                              alpha: 0.2,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              4,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            _movieDetail!.rated,
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      const SizedBox(height: 8),
-                                      if (_movieDetail!.runtime != 'N/A')
-                                        Text(
-                                          _movieDetail!.runtime,
-                                          style: const TextStyle(
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                      const SizedBox(height: 8),
-                                      if (_movieDetail!.genre != 'N/A')
-                                        Text(
-                                          _movieDetail!.genre,
-                                          style: const TextStyle(
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                    ],
+                                      );
+                                    },
+                                  )
+                                : Container(
+                                    width: 120,
+                                    height: 180,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(
+                                      Icons.movie,
+                                      size: 48,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
                           ),
-                        ),
-
-                        // Movie Details
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Plot
-                              if (_movieDetail!.plot != 'N/A' &&
-                                  _movieDetail!.plot.isNotEmpty)
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Plot',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      _movieDetail!.plot,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        height: 1.5,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 24),
-                                  ],
+                        ],
+                      ),
+                      SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(height: 200, color: Colors.black12),
+                            // Movie Poster and Basic Info
+                            Container(
+                              width: double.infinity,
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [Colors.black12, Colors.black],
                                 ),
-
-                              // Ratings
-                              if (_movieDetail!.ratings.isNotEmpty)
-                                Column(
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'Ratings',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Wrap(
-                                      children: _movieDetail!.ratings
-                                          .map(
-                                            (rating) => _buildRatingItem(
-                                              rating['Source']!,
-                                              rating['Value']!,
+                                    // Poster
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: _movieDetail!.poster != 'N/A'
+                                          ? Image.network(
+                                              _movieDetail!.poster,
+                                              width: 120,
+                                              height: 180,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                    return Container(
+                                                      width: 120,
+                                                      height: 180,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.grey[300],
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              12,
+                                                            ),
+                                                      ),
+                                                      child: const Icon(
+                                                        Icons.movie,
+                                                        size: 48,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    );
+                                                  },
+                                            )
+                                          : Container(
+                                              width: 120,
+                                              height: 180,
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey[300],
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: const Icon(
+                                                Icons.movie,
+                                                size: 48,
+                                                color: Colors.grey,
+                                              ),
                                             ),
-                                          )
-                                          .toList(),
                                     ),
-                                    const SizedBox(height: 24),
-                                  ],
-                                ),
-
-                              // IMDB Rating
-                              if (_movieDetail!.imdbRating != 'N/A')
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'IMDB Rating',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                          size: 24,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          _movieDetail!.imdbRating,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        if (_movieDetail!.imdbVotes != 'N/A')
+                                    const SizedBox(width: 16),
+                                    // Basic Info
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
                                           Text(
-                                            ' (${_movieDetail!.imdbVotes} votes)',
+                                            _movieDetail!.title,
                                             style: const TextStyle(
-                                              color: Colors.grey,
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
                                             ),
                                           ),
+                                          const SizedBox(height: 8),
+                                          if (_movieDetail!.year != 'N/A')
+                                            Text(
+                                              _movieDetail!.year,
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white54,
+                                              ),
+                                            ),
+                                          const SizedBox(height: 8),
+                                          if (_movieDetail!.rated != 'N/A')
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.2,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                              child: Text(
+                                                _movieDetail!.rated,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          const SizedBox(height: 8),
+                                          if (_movieDetail!.runtime != 'N/A')
+                                            Text(
+                                              _movieDetail!.runtime,
+                                              style: const TextStyle(
+                                                color: Colors.white54,
+                                              ),
+                                            ),
+                                          const SizedBox(height: 8),
+                                          if (_movieDetail!.genre != 'N/A')
+                                            Text(
+                                              _movieDetail!.genre,
+                                              style: const TextStyle(
+                                                color: Colors.white54,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            // Movie Details
+                            Container(
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [Colors.black, Colors.black],
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Plot
+                                    if (_movieDetail!.plot != 'N/A' &&
+                                        _movieDetail!.plot.isNotEmpty)
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Plot',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            _movieDetail!.plot,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              height: 1.5,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+                                        ],
+                                      ),
+
+                                    // Ratings
+                                    if (_movieDetail!.ratings.isNotEmpty)
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Ratings',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Wrap(
+                                            children: _movieDetail!.ratings
+                                                .map(
+                                                  (rating) => _buildRatingItem(
+                                                    rating['Source']!,
+                                                    rating['Value']!,
+                                                  ),
+                                                )
+                                                .toList(),
+                                          ),
+                                          const SizedBox(height: 24),
+                                        ],
+                                      ),
+                                    // IMDB Rating
+                                    if (_movieDetail!.imdbRating != 'N/A')
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'IMDB Rating',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.star,
+                                                color: Colors.amber,
+                                                size: 24,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                _movieDetail!.imdbRating,
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              if (_movieDetail!.imdbVotes !=
+                                                  'N/A')
+                                                Text(
+                                                  ' (${_movieDetail!.imdbVotes} votes)',
+                                                  style: const TextStyle(
+                                                    color: Colors.white70,
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 24),
+                                        ],
+                                      ),
+
+                                    // Cast & Crew
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Cast & Crew',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        _buildInfoRow(
+                                          'Director',
+                                          _movieDetail!.director,
+                                        ),
+                                        _buildInfoRow(
+                                          'Writer',
+                                          _movieDetail!.writer,
+                                        ),
+                                        _buildInfoRow(
+                                          'Actors',
+                                          _movieDetail!.actors,
+                                        ),
+                                        const SizedBox(height: 24),
                                       ],
                                     ),
-                                    const SizedBox(height: 24),
+                                    // Additional Details
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Additional Details',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        _buildInfoRow(
+                                          'Released',
+                                          _movieDetail!.released,
+                                        ),
+                                        _buildInfoRow(
+                                          'Language',
+                                          _movieDetail!.language,
+                                        ),
+                                        _buildInfoRow(
+                                          'Country',
+                                          _movieDetail!.country,
+                                        ),
+                                        _buildInfoRow(
+                                          'Awards',
+                                          _movieDetail!.awards,
+                                        ),
+                                        _buildInfoRow('DVD', _movieDetail!.dvd),
+                                        _buildInfoRow(
+                                          'Box Office',
+                                          _movieDetail!.boxOffice,
+                                        ),
+                                        _buildInfoRow(
+                                          'Production',
+                                          _movieDetail!.production,
+                                        ),
+                                        _buildInfoRow(
+                                          'Website',
+                                          _movieDetail!.website,
+                                        ),
+                                        _buildInfoRow(
+                                          'Metascore',
+                                          _movieDetail!.metascore,
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-
-                              // Cast & Crew
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Cast & Crew',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _buildInfoRow(
-                                    'Director',
-                                    _movieDetail!.director,
-                                  ),
-                                  _buildInfoRow('Writer', _movieDetail!.writer),
-                                  _buildInfoRow('Actors', _movieDetail!.actors),
-                                  const SizedBox(height: 24),
-                                ],
                               ),
-
-                              // Additional Details
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Additional Details',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _buildInfoRow(
-                                    'Released',
-                                    _movieDetail!.released,
-                                  ),
-                                  _buildInfoRow(
-                                    'Language',
-                                    _movieDetail!.language,
-                                  ),
-                                  _buildInfoRow(
-                                    'Country',
-                                    _movieDetail!.country,
-                                  ),
-                                  _buildInfoRow('Awards', _movieDetail!.awards),
-                                  _buildInfoRow('DVD', _movieDetail!.dvd),
-                                  _buildInfoRow(
-                                    'Box Office',
-                                    _movieDetail!.boxOffice,
-                                  ),
-                                  _buildInfoRow(
-                                    'Production',
-                                    _movieDetail!.production,
-                                  ),
-                                  _buildInfoRow(
-                                    'Website',
-                                    _movieDetail!.website,
-                                  ),
-                                  _buildInfoRow(
-                                    'Metascore',
-                                    _movieDetail!.metascore,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
           ),
-          Stack(
-            children: [
-              Common.Qurekaid.isNotEmpty
-                  ? InkWell(
-                      onTap: Common.openUrl,
-                      child: Image(
-                        width: MediaQuery.of(context).size.width,
-                        image: const AssetImage("assets/images/bannerads.png"),
-                        fit: BoxFit.fill,
-                      ),
-                    )
-                  : SizedBox(),
-              Common.native_ad_id.isNotEmpty
-                  ? NativeBannerAdWidget()
-                  : SizedBox(),
-            ],
-          ),
+          const WorkingNativeAdWidget(),
         ],
       ),
     );

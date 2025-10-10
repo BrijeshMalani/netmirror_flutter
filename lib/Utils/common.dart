@@ -1,6 +1,12 @@
 import 'package:url_launcher/url_launcher.dart';
 
 class Common {
+  static bool addOnOff = true;
+  static bool recentlyOpened = false;
+  static int interNumberShow = 1;
+  static DateTime? lastInterstitialAdTime;
+  static bool isAppInBackground = false;
+
   static String packageName = 'com.example.netmirror_flutter';
 
   // static String bannar_ad_id = 'ca-app-pub-3940256099942544/6300978111';
@@ -12,14 +18,23 @@ class Common {
   // static String Qurekaid = 'www.google.com';
   // static String netmirror_apiKey = '4f5620e6';
 
-  static String bannar_ad_id = ''; //admobId
-  static String interstitial_ad_id = ''; //admobFull
-  static String interstitial_ad_id1 = ''; //admobFull
-  static String interstitial_ad_id2 = ''; //admobFull
-  static String native_ad_id = ''; //admobNative
-  static String app_open_ad_id = ''; //rewardedInt
-  static String Qurekaid = '';//qurekaId
-  static String netmirror_apiKey = '';//fbid
+  static String bannar_ad_id =
+      'ca-app-pub-3940256099942544/6300978111'; //admobId
+  static String interstitial_ad_id =
+      'ca-app-pub-3940256099942544/1033173712'; //admobFull
+  static String interstitial_ad_id1 =
+      'ca-app-pub-3940256099942544/1033173712'; //admobFull
+  static String interstitial_ad_id2 =
+      'ca-app-pub-3940256099942544/1033173712'; //admobFull
+  static String native_ad_id =
+      'ca-app-pub-3940256099942544/2247696110'; //admobNative
+  static String native_ad_id_alt =
+      'ca-app-pub-3940256099942544/2247696110'; //admobNative alternative
+  static String app_open_ad_id =
+      'ca-app-pub-3940256099942544/9257395921'; //rewardedInt
+  static String Qurekaid = ''; //qurekaId
+  static String netmirror_apiKey = '4f5620e6'; //fbid  //4f5620e6
+  static int ads_int_open_count = 1; //rewardedFull2
 
   static String privacy_policy = ''; //rewardedFull
   static String terms_conditions = ''; //rewardedFull2

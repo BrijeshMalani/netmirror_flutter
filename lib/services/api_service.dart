@@ -49,11 +49,17 @@ class ApiService {
   static Future<MovieSearchResponse?> searchMovies(
     String query, {
     int page = 1,
+    String? type,
   }) async {
     try {
       final String apiKey = Common.netmirror_apiKey;
-      final String url =
+      String url =
           'https://www.omdbapi.com/?apikey=$apiKey&s=${Uri.encodeComponent(query)}&page=$page';
+
+      // Add type parameter if specified
+      if (type != null && type != 'all') {
+        url += '&type=${Uri.encodeComponent(type)}';
+      }
 
       print('Making movie search request to: $url');
       final response = await http.get(Uri.parse(url));

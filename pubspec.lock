@@ -132,10 +132,10 @@ packages:
     dependency: "direct main"
     description:
       name: google_mobile_ads
-      sha256: d2ef5ec1e1f31137fc241bdeab3037c31062d387dd221fd884fb1160444c788b
+      sha256: "4775006383a27a5d86d46f8fb452bfcb17794fc0a46c732979e49a8eb1c8963f"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.0"
+    version: "5.2.0"
   http:
     dependency: "direct main"
     description:
@@ -152,14 +152,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
-  hyper_lint:
-    dependency: transitive
-    description:
-      name: hyper_lint
-      sha256: "6d214b6e6e38d15f087ed9b67d461d026c9cdebb64c7a46cf1fb80350e536d33"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.2"
   in_app_purchase:
     dependency: "direct main"
     description:
@@ -288,14 +280,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
-  nested:
-    dependency: transitive
-    description:
-      name: nested
-      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   path:
     dependency: transitive
     description:
@@ -368,14 +352,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
-  provider:
-    dependency: "direct main"
-    description:
-      name: provider
-      sha256: "4e82183fa20e5ca25703ead7e05de9e4cceed1fbd1eadc1ac3cb6f565a09f272"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.1.5+1"
   rxdart:
     dependency: transitive
     description:
@@ -456,14 +432,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
-  simple_ripple_animation:
-    dependency: "direct main"
-    description:
-      name: simple_ripple_animation
-      sha256: d654c4a4a4a61ec8cf52b7b06dcf1bcb311c98e0a1a98534c6355aca2a73b6fd
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.9"
   sky_engine:
     dependency: transitive
     description: flutter

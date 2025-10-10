@@ -1,162 +1,103 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:netmirror_flutter/services/api_service.dart';
-import 'package:netmirror_flutter/services/app_lifecycle_reactor.dart';
 import 'package:netmirror_flutter/services/app_open_ad_manager.dart';
 import 'package:netmirror_flutter/splash_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:netmirror_flutter/widgets/SmallNativeAdService.dart';
 import 'Utils/common.dart';
-import 'ludo_provider.dart';
-
-final appOpenAdManager = AppOpenAdManager();
-
-Future<void> updateNoAdsState() async {
-  final prefs = await SharedPreferences.getInstance();
-  final noAds = prefs.getBool('no_ads_purchased') ?? false;
-  AppOpenAdManager.disableAds = noAds;
-  if (noAds) {
-    appOpenAdManager.dispose();
-  }
-}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await updateNoAdsState();
 
-  final data = await ApiService.fetchAppData();
-  print('API Response: $data');
+  // Initialize Google Mobile Ads
+  await MobileAds.instance.initialize();
 
-  if (data != null) {
-    if (data.rewardedFull.isNotEmpty) {
-      print('Setting privacy policy: ${data.rewardedFull}');
-      Common.privacy_policy = data.rewardedFull;
-    }
-    if (data.rewardedFull2.isNotEmpty) {
-      print('Setting terms and conditions: ${data.rewardedFull2}');
-      Common.terms_conditions = data.rewardedFull2;
-    }
-    if (data.startAppFull.isNotEmpty) {
-      print('Setting playstore link: ${data.startAppFull}');
-      Common.playstore_link = data.startAppFull;
-    }
-    if (data.gamezopId.isNotEmpty) {
-      print('qureka game layout: ${data.gamezopId}');
-      Common.qureka_game_show = data.gamezopId;
-    }
-    if (data.rewardedFull1.isNotEmpty) {
-      print('Ads Open Count: ${data.rewardedFull1}');
-      Common.ads_open_count = data.rewardedFull1;
-    }
-    if (data.startAppRewarded.isNotEmpty) {
-      print('Ads open area: ${data.startAppRewarded}');
-      Common.adsopen = data.startAppRewarded;
-    }
-    if (data.fbId.isNotEmpty) {
-      print('Net Mirror Key: ${data.fbId}');
-      Common.netmirror_apiKey = data.fbId;
-    }
-
-    if (data.qurekaId.isNotEmpty) {
-      print('qureka link: ${data.qurekaId}');
-      Common.Qurekaid = data.qurekaId;
-      // Common.Qurekaid = "";
-    }
-
-    if (data.admobId.isNotEmpty) {
-      print('Setting banner ad ID: ${data.admobId}');
-      Common.bannar_ad_id = data.admobId;
-    }
-    if (data.admobFull.isNotEmpty) {
-      print('Setting interstitial ad ID: ${data.admobFull}');
-      Common.interstitial_ad_id = data.admobFull;
-    }
-    if (data.admobFull1.isNotEmpty) {
-      print('Setting interstitial ad ID1: ${data.admobFull1}');
-      Common.interstitial_ad_id1 = data.admobFull1;
-    }
-    if (data.admobFull2.isNotEmpty) {
-      print('Setting interstitial ad ID2: ${data.admobFull2}');
-      Common.interstitial_ad_id2 = data.admobFull2;
-    }
-    // if (data.admobNative.isNotEmpty) {
-    //   print('Setting native ad ID: ${data.admobNative}');
-    //   // Common.native_ad_id = data.admobNative;
-    //   Common.native_ad_id = "ca-app-pub-3940256099942544/2247696110";
-    // }
-    if (data.rewardedInt.isNotEmpty) {
-      print('Setting app open ad ID: ${data.rewardedInt}');
-      Common.app_open_ad_id = data.rewardedInt;
-    }
-  }
-
-  // Initialize Mobile Ads SDK
-  await MobileAds.instance.initialize().then((initializationStatus) {
-    print('Mobile Ads SDK initialized');
-    // Set test device ID
-    MobileAds.instance.updateRequestConfiguration(
-      RequestConfiguration(
-        testDeviceIds: ['188CBD28D7B3F383A267B0FA91535B3B'],
-        tagForChildDirectedTreatment: TagForChildDirectedTreatment.unspecified,
-        tagForUnderAgeOfConsent: TagForUnderAgeOfConsent.unspecified,
-      ),
-    );
-  });
-
-  // Initialize AppLifecycleReactor
-  final appLifecycleReactor = AppLifecycleReactor(
-    appOpenAdManager: appOpenAdManager,
-  );
-  appLifecycleReactor.listenToAppStateChanges();
-
-  // Preload the app open ad
-  await appOpenAdManager.loadAd();
-
-  return runApp(
-    ChangeNotifierProvider(
-      create: (_) => LudoProvider()..startGame(playerCount: 4),
-      child: const Root(),
+  // Configure test device for development
+  MobileAds.instance.updateRequestConfiguration(
+    RequestConfiguration(
+      testDeviceIds: [
+        'A69FFF02F5AF526F6B14615EAAEF3FB9',
+      ], // Your device ID from logs
     ),
   );
+
+  return runApp(const Root());
 }
 
-class Root extends StatefulWidget {
+class Root extends StatefulWidget with WidgetsBindingObserver {
   const Root({super.key});
 
   @override
   State<Root> createState() => _RootState();
 }
 
-class _RootState extends State<Root> {
+class _RootState extends State<Root> with WidgetsBindingObserver {
+  final AppOpenAdManager _appOpenAdManager = AppOpenAdManager();
+
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    // Initialize native ad service
+    SmallNativeAdService().initialize();
+
     ///Initialize images and precache it
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Future.wait([
+        precacheImage(const AssetImage("assets/images/n1.jpeg"), context),
+        precacheImage(const AssetImage("assets/images/n2.jpeg"), context),
+        precacheImage(const AssetImage("assets/images/n3.jpeg"), context),
+        precacheImage(const AssetImage("assets/images/n4.jpeg"), context),
         precacheImage(const AssetImage("assets/images/splash.png"), context),
-        precacheImage(const AssetImage("assets/images/thankyou.gif"), context),
-        precacheImage(const AssetImage("assets/images/board.png"), context),
-        precacheImage(const AssetImage("assets/images/dice/1.png"), context),
-        precacheImage(const AssetImage("assets/images/dice/2.png"), context),
-        precacheImage(const AssetImage("assets/images/dice/3.png"), context),
-        precacheImage(const AssetImage("assets/images/dice/4.png"), context),
-        precacheImage(const AssetImage("assets/images/dice/5.png"), context),
-        precacheImage(const AssetImage("assets/images/dice/6.png"), context),
-        precacheImage(const AssetImage("assets/images/dice/draw.gif"), context),
-        precacheImage(const AssetImage("assets/images/crown/1st.png"), context),
-        precacheImage(const AssetImage("assets/images/crown/2nd.png"), context),
-        precacheImage(const AssetImage("assets/images/crown/3rd.png"), context),
-        precacheImage(const AssetImage("assets/images/bannerads.png"), context),
-        precacheImage(const AssetImage("assets/images/letsgo.png"), context),
-        precacheImage(const AssetImage("assets/images/qurekaads.png"), context),
         precacheImage(
           const AssetImage("assets/images/qurekaads2.png"),
           context,
         ),
       ]);
     });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // App is going to background
+      Common.isAppInBackground = true;
+    } else if (state == AppLifecycleState.resumed) {
+      // App is resuming from background
+      if (Common.addOnOff && Common.isAppInBackground) {
+        if (!_recentlyShownInterstitial()) {
+          _appOpenAdManager.showAdIfAvailable();
+        }
+      }
+      // Reset background flag after handling resume
+      Common.isAppInBackground = false;
+    }
+  }
+
+  bool _recentlyShownInterstitial() {
+    // Check if recently opened flag is true
+    if (Common.recentlyOpened) {
+      return true;
+    }
+
+    // Check if interstitial ad was shown within the last 15 seconds
+    if (Common.lastInterstitialAdTime != null) {
+      final timeSinceLastAd = DateTime.now().difference(
+        Common.lastInterstitialAdTime!,
+      );
+      if (timeSinceLastAd.inSeconds < 15) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @override
